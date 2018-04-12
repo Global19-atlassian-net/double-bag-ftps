@@ -24,7 +24,7 @@ shared_examples_for "DoubleBagFTPS" do
       filename.should_not be_nil
       local_path = File.join(temp_dir, filename)
       @ftp.get(filename, local_path)
-      File.exists?(local_path).should be_true
+      File.exists?(local_path).should be true
     end
   end
 
