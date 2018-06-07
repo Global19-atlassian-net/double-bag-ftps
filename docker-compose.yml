@@ -1,0 +1,30 @@
+version: '3'
+
+services:
+  gem:
+    build: .
+    volumes:
+      - .:/gem
+      - bundler:/usr/local/bundle
+  ftp:
+    build:
+      context: .
+      dockerfile: Dockerfile-ftp
+    ports:
+      - "21:21"
+      - "990:990"
+      - "30000:30000"
+      - "30001:30001"
+      - "30002:30002"
+      - "30003:30003"
+      - "30004:30004"
+      - "30005:30005"
+      - "30006:30006"
+      - "30007:30007"
+      - "30008:30008"
+      - "30009:30009"
+    environment:
+      PUBLICHOST: ftps
+
+volumes:
+  bundler:

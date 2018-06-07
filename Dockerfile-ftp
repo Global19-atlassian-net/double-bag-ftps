@@ -1,0 +1,15 @@
+FROM stilliard/pure-ftpd
+
+RUN mkdir -p /etc/ssl/private
+RUN openssl dhparam -out /etc/ssl/private/pure-ftpd-dhparams.pem 2048
+RUN openssl req -x509 -nodes -newkey rsa:2048 -sha256 -keyout \
+    /etc/ssl/private/pure-ftpd.pem \
+    -out /etc/ssl/private/pure-ftpd.pem \
+    -subj "/C=US/ST=Virginia/CN=example.com"
+RUN chmod 600 /etc/ssl/private/*.pem
+
+RUN (echo "test"; echo "test") | \
+    pure-pw useradd test -f /etc/pure-ftpd/passwd/pureftpd.passwd \
+    -m -u ftpuser -d /home/ftpusers/test
+
+EXPOSE 21 990 30000-30009
