@@ -3,6 +3,6 @@ require 'double_bag_ftps'
 
 require 'tmpdir'
 
-HOST   = 'ftp.secureftp-test.com'
-USR    = 'test'
-PASSWD = 'test'
+HOST   = 'localhost'
+USR    = 'ftptest'
+PASSWD = 'ftppass'

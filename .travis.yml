@@ -1,0 +1,31 @@
+language: ruby
+sudo: false
+
+script: rspec
+
+rvm:
+  - 2.2
+  - 2.3
+
+before_install:
+  # Install ftp server
+  - sudo apt-get -qq update
+  - sudo apt-get install -y vsftpd
+
+  # Create a test user
+  - sudo useradd ftptest -s /bin/bash -m
+  - echo ftptest:ftppass | sudo chpasswd
+
+  # Create a test file
+  - echo "Hello, world!" | sudo -u ftptest tee -a /home/ftptest/testfile
+
+  # Allow ascii access
+  - echo "ascii_download_enable=YES" | sudo tee -a /etc/vsftpd.conf
+  # Configure default server for explicit ftps
+  - echo "ssl_enable=Yes" | sudo tee -a /etc/vsftpd.conf
+
+  - sudo restart vsftpd
+
+  # Configure and run a second server for implicit ftps
+  - cat /etc/vsftpd.conf
+  - sudo vsftpd /etc/vsftpd.conf -oimplicit_ssl=YES -olisten_port=990 &
