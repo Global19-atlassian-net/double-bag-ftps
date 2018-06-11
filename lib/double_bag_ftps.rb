@@ -59,11 +59,18 @@ class DoubleBagFTPS < Net::FTP
     super
   end
 
+  # used to turn on and off code paths that are specific versions of ruby older than 2.4
+  def compatibility_mode?
+    false
+  end
+
   def login(user = 'anonymous', passwd = nil, acct = nil, auth = 'TLS')
     if ftps_explicit?
       synchronize do
-        sendcmd('AUTH ' + auth) # Set the security mechanism
-        @sock = ssl_socket(@sock)
+        if compatibility_mode?
+          sendcmd('AUTH ' + auth) # Set the security mechanism
+          @sock = ssl_socket(@sock)
+        end
       end
     end
     
