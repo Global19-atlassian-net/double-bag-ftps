@@ -1,0 +1,45 @@
+FROM ubuntu:trusty
+
+ARG DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get -qq update
+RUN apt-get install -y openssl vsftpd
+
+RUN mkdir -p /etc/ssl/private
+RUN openssl dhparam -out /etc/ssl/private/vsftpd-dhparams.pem 2048
+RUN openssl req -x509 -nodes -newkey rsa:2048 -sha256 \
+    -keyout /etc/ssl/private/vsftpd.pem \
+    -out /etc/ssl/private/vsftpd.pem \
+    -subj "/C=US/ST=Virginia/CN=example.com"
+RUN chmod 600 /etc/ssl/private/*.pem
+
+# Create a test user
+RUN useradd ftptest -s /bin/bash -m
+RUN echo ftptest:ftppass | chpasswd
+
+# Install certificates
+RUN echo "rsa_cert_file=/etc/ssl/private/vsftpd.pem" | tee -a /etc/vsftpd.conf
+RUN echo "rsa_private_key_file=/etc/ssl/private/vsftpd.pem" | tee -a /etc/vsftpd.conf
+
+# Allow ascii access
+RUN echo "ascii_download_enable=YES" | tee -a /etc/vsftpd.conf
+
+# Configure default server for explicit ftps
+RUN echo "ssl_enable=YES" | tee -a /etc/vsftpd.conf
+
+# Enable logging
+RUN touch /var/log/vsftpd.log
+RUN echo "vsftpd_log_file=/var/log/vsftpd.log" | tee -a /etc/vsftpd.conf
+RUN echo "log_ftp_protocol=YES" | tee -a /etc/vsftpd.conf
+
+# Disable secure_chroot_dir
+# secure_chroot_dir=/var/run/vsftpd/empty
+RUN sed '/secure_chroot_dir/s/^/#/g' /etc/vsftpd.conf
+
+RUN mkdir -p /var/share/empty
+RUN echo "secure_chroot_dir=/var/share/empty" | tee -a /etc/vsftpd.conf
+
+COPY ./docker-ftps-entrypoint.sh /
+CMD ["/docker-ftps-entrypoint.sh"]
+
+EXPOSE 21 990 30000-30009

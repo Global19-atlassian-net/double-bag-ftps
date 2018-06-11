@@ -3,6 +3,10 @@ require 'double_bag_ftps'
 
 require 'tmpdir'
 
-HOST   = 'localhost'
+if ENV['TRAVIS'] == 'true'
+  HOST   = 'localhost'
+else
+  HOST   = 'ftps'
+end
 USR    = 'ftptest'
 PASSWD = 'ftppass'

@@ -54,6 +54,18 @@ Interface
     ftps_explicit?
     ftps_implicit?
 
+Running Tests Inside using `docker-compose`
+-------------------------------------------
+
+```
+docker-compose build
+docker-compose run gem rspec
+```
+
+This will start a Docker container which is set up to accept implicit and explicit connections.
+
+This container's configuration should be very similar to that used by TravisCI.
+
 More Information
 ----------------
 

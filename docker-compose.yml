@@ -1,0 +1,24 @@
+version: '3'
+
+services:
+  gem:
+    build: .
+    depends_on:
+      - ftps
+    volumes:
+      - .:/gem
+      - bundler:/usr/local/bundle
+  ftps:
+    build:
+      context: .
+      dockerfile: Dockerfile-ftps
+    ports:
+      - "21:21"
+      - "990:990"
+    volumes:
+      - ./tmp/ftp_root:/home/ftptest
+    environment:
+      PUBLICHOST: ftps
+
+volumes:
+  bundler:
